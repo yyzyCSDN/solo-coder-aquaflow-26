@@ -4,7 +4,12 @@ class Result:
     sample:str;analyte:str;value:float;revision:int;supersedes:int|None=None
 def current(rows:list[Result],sample:str,analyte:str):
     xs=[r for r in rows if r.sample==sample and r.analyte==analyte]
+    known={r.revision for r in xs}
     superseded=set()
+    for r in xs:
+        if r.supersedes is None:continue
+        if r.supersedes not in known:raise ValueError("unresolvable history")
+        superseded.add(r.supersedes)
     active=[r for r in xs if r.revision not in superseded]
     if len(active)!=1:raise ValueError("ambiguous")
     return active[0]

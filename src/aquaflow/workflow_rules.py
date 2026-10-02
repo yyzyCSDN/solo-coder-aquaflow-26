@@ -82,7 +82,7 @@ def evaluate(name: str, p: dict[str, Any]) -> dict[str, Any]:
         result = assign(requests, people)
         return {"decision": "schedule", "value": {k: [v[0], v[1].isoformat()] for k, v in result.items()}, "evidence": {"requests": len(requests)}}
     if name == "lab_revision":
-        rows = [Result(str(x["sample"]), str(x["analyte"]), float(x["value"]), int(x["revision"]), x.get("supersedes") if p.get("_supersession_policy") == "latest_active" else None) for x in p["results"]]
+        rows = [Result(str(x["sample"]), str(x["analyte"]), float(x["value"]), int(x["revision"]), int(x["supersedes"]) if x.get("supersedes") is not None else None) for x in p["results"]]
         result = current(rows, str(p["sample"]), str(p["analyte"]))
         return {"decision": "publish", "value": result.revision, "evidence": {"value": result.value}}
     if name == "meter_balance":
